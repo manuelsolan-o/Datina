@@ -1,0 +1,81 @@
+---
+title: "Datina"
+subtitle: "Una comunidad de Ciencia de Datos"
+#author: "Manuel Solano"
+
+logo: media/Datina.png
+format: 
+  revealjs:
+    css: styles.css
+---
+
+## ¿Por qué Datina?
+
+-   Este proyecto busca atender a la necesidad de crear un espacio para las personas interesadas en el área de datos.
+
+## Datinas
+
+-   La idea es generar sesiones a las que se les llamará Datinas en donde discutiremos temas relevantes acerca del área de datos.
+-   Sesiones interdisciplinares.
+-   Pensamiento Crítico y Creativo.
+
+## ¿Qué Pasa si falte a una Datina?
+
+-   Las sesiones no serán consecutivas.
+
+-   Todos los recursos presentados en las Datinas estarán disponibles en un repositorio de GitHub ([Datina](https://github.com/manuelsolan-o/Datina/tree/main))
+
+<center>![](media/git.png){width="631"}</center>
+
+## Sesiones
+
+::: columns
+::: {.column width="45%"}
+1.  Data Visualization Grammar - GGplot2
+2.  Estructurando Datos no estructurados
+3.  Preguntas de Entrevistas
+4.  ¿Pudimos haber predicho las elecciones en México? - Simulación Montecarlo
+5.  Sesión Interdiciplinar
+:::
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="45%"}
+6.  Pendiente
+7.  Pendiente
+8.  Sesión Interdiciplinar
+9.  Pendiente
+10. Crea tu propio diagrama de Venn
+:::
+:::
+
+## Datina T1
+
+-   Se busca armar 10 datinas que se realizará un día a la semana durante el próximo semestre.
+
+-   Cada Datina involucra mucho tiempo de preparación dado el cuidado y la calidad que exige el producto, es por eso que aún no las tengo diseñadas.
+
+## Datina 1: Data Visualization Grammar
+
+Data of Suicides around the world
+
+<center>![](media/country1.png){width="631"}</center>
+
+## Datina 1: Data Visualization Grammar
+
+Data of Suicides around the world
+
+<center>![](media/country2.png){width="631"}</center>
+
+## Datina 4: ¿Pudimos haber predicho las elecciones en México?
+
+<center>![](media/proba.jpeg){width="393"}</center>
+
+## Datina 10: Crea tu propio diagrama de Venn
+
+<center>![](media/diagrama.png){width="524"}</center>
+
+## Propuesta: Datina, una célula de Algoritmia
+
+- Inicialmente este proyecto se pensaba realizar de forma independiente pero en realidad tiene más sentido fusionarse con Algoritmia ya que Algoritmia tiene el enorme mérito de tener una comunidad consolidada.
