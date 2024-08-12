@@ -1,0 +1,401 @@
+---
+title: "Datina 1: Grammar of Graphics"
+format: 
+  html: 
+    theme: zephyr
+    self-contained: true
+    code-fold: true
+    code-tools: true
+    code-line-numbers: true
+editor: visual
+#author: "Manuel Solano"
+date: "August 11, 2024"
+toc: true
+eval: false
+---
+
+## ¿Qué es?
+
+## ggplot2
+
+Para fines prácticos de esta sesión trabajaremos con el paquete de R [ggplot2](https://ggplot2.tidyverse.org/).
+
+![](media/Ggplot2_hex_logo.png){width="115"}
+
+También existe una alternativa en python para grammar of graphics llamada [plotnine](https://plotnine.org/) la cual está basada en ggplot2.
+
+## ¿Qué NO es está Datina?
+
+## ¿Qué SÍ es está Datina?
+
+-   Vista rápida en el porqué la gramática de gráficos es útil es la mayoría de DataSets
+
+-   Un espacio para que florezcan dudas e inquitudes sobre la visualización de datos.
+
+## Base de Datos
+
+Se usará el DataSet de [Suicide Rates Overview 1985 to 2016](https://www.kaggle.com/datasets/russellyates88/suicide-rates-overview-1985-to-2016) el cuál compara información socioeconómica con tasas de suicidio por año y país para explicar cómo funciona *the grammar of Graphics*.
+
+```{r}
+data <- read.csv("media/master.csv")
+head(data)
+```
+
+![](media/data.png){width="692"}
+
+## Comparación de enfoques Forma Tradicional vs Grammar of Graphics
+
+### Forma Tradicional
+
+```{r}
+plot(data$population, data$suicides_no)
+```
+
+![](media/trad1.png){width="692"}
+
+### Plotear con ggplot / plotnine
+
+```{r}
+library(ggplot2)
+
+ggplot(data, aes(x = population, y = suicides_no)) +
+  geom_point()
+```
+
+![](media/ggplot2_1.png){width="687"}
+
+## Agregar color dependiendo del sexo
+
+### Introducción a wide and long data
+
+-   Wide format data tiene valores que no se repiten en la primera columna.
+
+![](media/wide_format.png){width="697" height="149"}
+
+-   Long format data tiene valores que se repiten en la primera columna.
+
+![](media/long_format.png){width="731"}
+
+### Forma Tradicional (Wide Format)
+
+Se crean nuevas columnas para la población y número de suicidios de hombres y de mujeres.
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(knitr)
+
+df_wide <- data %>%
+  select(country, year, age, sex, suicides_no, population) %>%
+  pivot_wider(
+    values_from = c("population", "suicides_no"),
+    names_from = "sex",
+    id_cols = c("country", "year", "age")
+  )
+
+head(df_wide)
+```
+
+![](media/df_wide.png){width="731"}
+
+```{r}
+plot(df_wide$population_male, df_wide$suicides_no_male, col = "red")
+points(df_wide$population_female, df_wide$suicides_no_female, col = "blue")
+```
+
+![](media/wide_points.png){width="731"}
+
+### Grammar of Graphics
+
+Grammar of graphics usa Long Format, por lo que no es necesario crear nuevas columnas.
+
+```{r}
+ggplot(data, aes(x = population, y = suicides_no, colour = sex))+
+  geom_point()
+```
+
+![](media/gg1.png){width="731"}
+
+## Aesthetics and Geoms
+
+`aes(x = population, y = suicides_no, colour = sex)`
+
+-   La estética del gráfico se asocia con valores para cada uno de nuestros de la siguiente manera:
+
+    -   El eje horizontal con la columna de `population`
+    -   El eje vertical con la columna de `suicides_no`
+    -   El color de los puntos con la columna de `sex`
+
+-   geoms controlan como la estética se visualiza.
+
+## Color por país
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+
+set.seed(1)
+random_countries <- sample(unique(data$country), 5)
+
+filtered_data <- data %>%
+  filter(country %in% random_countries)
+
+age_order <- c("5-14 years", "15-24 years", "25-34 years", 
+               "35-54 years", "55-74 years", "75+ years")
+
+filtered_data <- filtered_data %>%
+  mutate(age = factor(age, levels = age_order))
+```
+
+```{r}
+ggplot(filtered_data, aes(x = population, y = suicides_no, colour = country)) +
+  geom_point()
+```
+
+![](media/filter.png){width="710"}
+
+## Shape por país
+
+```{r}
+ggplot(filtered_data, aes(x = population, y = suicides_no, shape = country)) +
+  geom_point()
+```
+
+![](media/shape_country.png){width="731"}
+
+## Regresión (Lineal) por país
+
+```{r}
+ggplot(filtered_data, aes(x = population, y = suicides_no, colour = country)) +
+  geom_point(alpha = 0.3) + geom_smooth(method = "lm", se = F)
+```
+
+![](media/lm_country.png){width="731"}
+
+## Regresión de todos (5) los países
+
+```{r}
+ggplot(filtered_data, aes(x = population, y = suicides_no)) +
+  geom_point(alpha = 0.3, aes(colour = country)) +
+  geom_smooth(method = "lm", se = F, colour = "black")
+```
+
+![](media/overal_lm.png){width="731"}
+
+## ¿Qué es un geom?
+
+-   `geom_point` y `geom_smooth` son ambos elementos geométricos ("geoms") usados para representar datos.
+-   Aquí ambos usan las mismas variables `x` y `y` para producir una diferente vosualización.
+-   Otros ejemplos son `geom_line`, `geom_histagram`, `geom_violin`, `geom_rectangle`.
+
+```{r}
+dummy_df <- data.frame(
+  x = c(1, 2, 3),
+  y = c(2, 4, 10),
+  label = c("a", "b", "c")
+)
+
+head(dummy_df)
+```
+
+![](media/dummy_df.png){width="731"}
+
+## Puntos
+
+```{r}
+ggplot(dummy_df, aes(x,y, label = label)) + 
+  theme(text = element_text(size=14)) + 
+  geom_point()
+```
+
+![](media/puntos_gg.png){width="731"}
+
+## Texto
+
+```{r}
+ggplot(dummy_df, aes(x,y, label = label)) + 
+  theme(text = element_text(size=14)) + 
+  geom_text(size = 18)
+```
+
+![](media/texto.png){width="731"}
+
+## Columnas
+
+```{r}
+ggplot(dummy_df, aes(x,y, label = label)) + 
+  theme(text = element_text(size=14)) + 
+  geom_col()
+```
+
+![](media/barras.png){width="731"}
+
+## Linea
+
+```{r}
+ggplot(dummy_df, aes(x,y, label = label)) + 
+  theme(text = element_text(size=14)) + 
+  geom_line()
+```
+
+![](media/linea.png){width="692"}
+
+## Linea y puntos
+
+```{r}
+ggplot(dummy_df, aes(x,y, label = label)) + 
+  theme(text = element_text(size=14)) + 
+  geom_line() + geom_point()
+```
+
+![](media/linea_puntos.png){width="731"}
+
+## Polígono
+
+```{r}
+ggplot(dummy_df, aes(x,y, label = label)) + 
+  theme(text = element_text(size=14)) + 
+  geom_polygon()
+```
+
+![](media/poligono.png){width="731"}
+
+## Orden de Capas
+
+El orden de los geoms importa. En este caso al ser `geom_smooth` el último geom, se plotea adelante del gráfico.
+
+```{r}
+ggplot(filtered_data, aes(x = population, y = suicides_no)) +
+  geom_point(alpha = 0.3, aes(colour = country)) +
+  geom_smooth(method = "lm", se = F, colour = "black")
+```
+
+![](media/orden1.png){width="731"}
+
+Aquí en cambio la línea de regresión se muestra debajo de los puntos.
+
+```{r}
+ggplot(filtered_data, aes(x = population, y = suicides_no)) +
+  geom_smooth(method = "lm", se = F, colour = "black") +
+  geom_point(alpha = 0.3, aes(colour = country)) 
+```
+
+![](media/orden2.png){width="731"}
+
+## Cambiar las escalas de los ejes
+
+Es muy fácil cambiar las escalas de los ejes, aquí por ejemplo se muestra un cambio en escala de raíz cuadrada.
+
+```{r}
+ggplot(filtered_data, aes(x = population, y = suicides_no)) +
+  geom_point(alpha = 0.3, aes(colour = country)) +
+  scale_x_sqrt() + scale_y_sqrt()
+```
+
+![](media/ejes.png){width="731"}
+
+## Volviendo a nuestro DataSet
+
+## ¿Cuáles ha sido las tendencias de suicidios a lo largo del tiempo?
+
+Esta visualización no termina de ser muy informativa.
+
+```{r}
+ggplot(filtered_data, aes(x = year, y = suicides_no)) + 
+  geom_point(alpha = 0.3)
+```
+
+![](media/year.png){width="731"}
+
+## Boxplots
+
+```{r}
+ggplot(filtered_data, aes(x = as.factor(year), y = suicides_no)) + 
+  geom_boxplot()
+```
+
+![](media/boxplots.png){width="731"}
+
+## Voltear Boxplots
+
+Sigue sin ser una buena visualización, porque no explica la tendencia a nivel país.
+
+```{r}
+ggplot(filtered_data, aes(x = as.factor(year), y = suicides_no)) + 
+  geom_boxplot() + 
+  coord_flip()
+```
+
+![](media/rotated_box.png){width="731"}
+
+## Tendencias por país
+
+Obtenemos una visualización ruidosa.
+
+```{r}
+ggplot(filtered_data, aes(x = as.factor(year), y = suicides_no, fill = country)) + 
+  geom_boxplot() + 
+  coord_flip()
+```
+
+![](media/country_box.png){width="731"}
+
+## Separar por grupos de edades
+
+```{r}
+ggplot(filtered_data, aes(x = year, y = suicides_no, colour = country, shape = age)) + 
+  geom_point(alpha = 0.8) 
+```
+
+![](media/age_country.png){width="731"}
+
+## Facet Panelling
+
+-   Crear subgráficos (facets)
+
+-   Cada facet representa un gráfico de un subconjunto de tu data.
+
+## Facet por país
+
+```{r}
+ggplot(filtered_data, aes(x = year, y = suicides_no, shape = age)) + 
+  geom_point() +  facet_wrap(~country) 
+```
+
+![](media/facet1.png){width="731"}
+
+## Paneles de Edad y País
+
+```{r}
+ggplot(filtered_data, aes(x = year, y = suicides_no)) + 
+  geom_point() +  facet_grid(vars(country), vars(age), scales = "free") 
+```
+
+![](media/paneles.png){width="731"}
+
+## Agregar color en sexo
+
+```{r}
+ggplot(filtered_data, aes(x = year, y = suicides_no, colour = sex)) + 
+  geom_point() +  facet_grid(vars(country), vars(age), scales = "free") 
+```
+
+![](media/color_sexo.png){width="731"}
+
+## Cambiar puntos a lineas
+
+```{r}
+ggplot(filtered_data, aes(x = year, y = suicides_no, colour = sex)) + 
+  geom_line() +  facet_grid(vars(country), vars(age), scales = "free") 
+```
+
+![](media/color_sexo.png){width="731"}
+
+## Beneficios de GG
+
+-   Exploración de datos rápida.
+
+-   Permite tener un orden de capas entre variables.
+
+-   Existen muchísimos gráficos.
+
+## Referencias de Consulta
